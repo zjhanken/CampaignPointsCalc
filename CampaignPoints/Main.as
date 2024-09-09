@@ -37,7 +37,7 @@ void RenderInterface() {
     if (!ShowWindow) return;
     if (UI::Begin(WindowTitle, ShowWindow, UI::WindowFlags::NoCollapse | UI::WindowFlags::NoResize)) {
         
-        UI::SetWindowSize(vec2(770, 910)); 
+        UI::SetWindowSize(vec2(770, 930)); 
 
         for (int i = 0; i < inputRanks.Length; i++) {
             int mapNum = i+1;
@@ -65,6 +65,9 @@ void RenderInterface() {
         }
         if (UI::Button("Set All Above 10 to 10")) {
             SetValuesAboveThreshold(10);
+        }
+        if (UI::Button("Set all to official campaign")) {
+            SetValuesToOfficialCampaign();
         }
     
     
@@ -106,6 +109,10 @@ void SetValuesAboveThreshold(int threshold) {
         }
     }  // Update map texts after setting values
     CalculateTotalPoints();  // Recalculate the total points
+}
+
+void SetValuesToOfficialCampaign() {
+    startnew(API::GetCurrentCampaignRanks);
 }
 
 int CalculateResult(int rank) {
