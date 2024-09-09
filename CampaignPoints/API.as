@@ -23,6 +23,7 @@ namespace API {
                 inputRanks[index] = rank;
             }
         }
+        loadingTimes = false;
     }
 
     int GetRank(string groupUid, string mapUid) {
