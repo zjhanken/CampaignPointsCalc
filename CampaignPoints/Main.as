@@ -5,6 +5,7 @@ void Main() {
 
 const string WindowTitle = "Campaign Points Calculator";
 string resultText = "Result: ";
+bool loadingTimes = false;
 array<int> inputRanks(25, 1);
 array<string> mapTexts = {
     "Map 1 Rank", "Map 2 Rank", "Map 3 Rank", "Map 4 Rank", "Map 5 Rank", 
@@ -55,7 +56,11 @@ void RenderInterface() {
         }
     }
         // Display result text
+        if(!loadingTimes) {
         UI::Text(resultText);
+        } else {
+            UI::Text("Loading ranks...");
+        }
         // Buttons to set values above thresholds
         if (UI::Button("Set All Above 1000 to 1000")) {
             SetValuesAboveThreshold(1000);
@@ -67,6 +72,7 @@ void RenderInterface() {
             SetValuesAboveThreshold(10);
         }
         if (UI::Button("Set all to official campaign")) {
+            loadingTimes = true;
             SetValuesToOfficialCampaign();
         }
     
