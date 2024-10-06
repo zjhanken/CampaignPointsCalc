@@ -86,7 +86,7 @@ void CalculateTotalPoints() {
     bool validInput = true;
 
     for (int i = 0; i < inputRanks.Length; i++) {
-        if (inputRanks[i] < 1) {
+        if (inputRanks[i] < 0) {
             validInput = false;
             break;
         }
@@ -116,7 +116,9 @@ void SetValuesToOfficialCampaign() {
 }
 
 int CalculateResult(int rank) {
-    if (rank < 11) {
+    if (rank < 1) {
+        return 0;
+    } else if (rank < 11) {
         return 40000 / rank;
     } else {
         return int((4000 / Math::Pow(2, Math::Ceil(Math::Log(rank) / Math::Log(10)) - 1)) * (Math::Pow(10, Math::Ceil(Math::Log(rank) / Math::Log(10)) - 1) / rank + 0.9));
