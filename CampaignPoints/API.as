@@ -16,12 +16,13 @@ namespace API {
         auto mapList = currentCampaign["playlist"];
         for (int i = 0; i < mapList.Length; ++i) {
             auto map = mapList[i];
+            int index = map["position"];
+            if (index < 0 || index >= inputRanks.Length) {
+                continue;
+            }
             string mapUid = map["mapUid"];
             int rank = GetRank(currentCampaignGroupId, mapUid);
-            int index = map["position"];
-            if (rank > 0 && index >= 0 && index < inputRanks.Length) {
-                inputRanks[index] = rank;
-            }
+            inputRanks[index] = rank;
         }
         loadingTimes = false;
     }
@@ -33,7 +34,13 @@ namespace API {
         while (!reqRanks.Finished()) {
             yield();
         }
+
         auto resRanks = Json::Parse(reqRanks.String());
+        if (!resRanks.HasKey("zones")) {
+            // No rank for this map.
+            return 0;
+        }
+
         auto zones = resRanks["zones"];
         for (int i = 0; i < zones.Length; ++i) {
             auto zone = zones[i];
@@ -41,7 +48,7 @@ namespace API {
                 return zone["ranking"]["position"];
             }
         }
-        return -1;
+        return 0;
     }
 
 }
