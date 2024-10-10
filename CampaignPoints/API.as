@@ -1,11 +1,21 @@
-namespace API {
 
+namespace API {
+    string regionInput = "";  // String variable to store the user-inputted region
+    bool showRegionPopup = false;  // Flag to control when the popup should appear
+
+    // Function to call when "Set all to official campaign" is clicked
     void GetCurrentCampaignRanks() {
+        // Trigger the popup to get the region input
+        showRegionPopup = true;
+    }
+
+    // Function to run after the region is inputted
+    void FetchCampaignRanksWithRegion() {
         if (!NadeoServices::IsAuthenticated("NadeoLiveServices")) {
             return;
         }
 
-        auto reqCampaign = NadeoServices::Get("NadeoLiveServices", NadeoServices::BaseURLLive()+"/api/token/campaign/official?length=1&offset=0");
+        auto reqCampaign = NadeoServices::Get("NadeoLiveServices", NadeoServices::BaseURLLive() + "/api/token/campaign/official?length=1&offset=0");
         reqCampaign.Start();
         while (!reqCampaign.Finished()) {
             yield();
@@ -21,14 +31,18 @@ namespace API {
                 continue;
             }
             string mapUid = map["mapUid"];
-            int rank = GetRank(currentCampaignGroupId, mapUid);
+            int rank = GetRank(currentCampaignGroupId, mapUid, regionInput);  // Use the inputted region
             inputRanks[index] = rank;
         }
         loadingTimes = false;
     }
 
-    int GetRank(string groupUid, string mapUid) {
-        string reqRanksUrl = NadeoServices::BaseURLLive()+"/api/token/leaderboard/group/"+groupUid+"/map/"+mapUid+"?accountId="+NadeoServices::GetAccountID();
+    // Modified GetRank function to include the region parameter
+    int GetRank(string groupUid, string mapUid, string region) {
+        if(region=="") {
+            region = "World";
+        }
+        string reqRanksUrl = NadeoServices::BaseURLLive() + "/api/token/leaderboard/group/" + groupUid + "/map/" + mapUid + "?accountId=" + NadeoServices::GetAccountID();
         auto reqRanks = NadeoServices::Get("NadeoLiveServices", reqRanksUrl);
         reqRanks.Start();
         while (!reqRanks.Finished()) {
@@ -44,11 +58,11 @@ namespace API {
         auto zones = resRanks["zones"];
         for (int i = 0; i < zones.Length; ++i) {
             auto zone = zones[i];
-            if (zone["zoneName"] == "World") {
+            if (zone["zoneName"] == region) {
                 return zone["ranking"]["position"];
             }
         }
         return 0;
     }
-
 }
+
